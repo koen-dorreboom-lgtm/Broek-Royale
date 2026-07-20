@@ -7,6 +7,7 @@ export interface User {
   lastName: string;
   username: string;
   email: string;
+  avatarUrl?: string;
 }
 
 export interface Team {
@@ -39,4 +40,5 @@ export interface LeaderboardEntry {
   username: string;
   points: number;
   correctPredictions: number;
+  avatarUrl?: string;
 }

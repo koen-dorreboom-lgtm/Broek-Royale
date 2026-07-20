@@ -16,6 +16,7 @@ export function getLeaderboardForUser(user: User | null): LeaderboardEntry[] {
     username: user.username,
     points: 0,
     correctPredictions: 0,
+    avatarUrl: user.avatarUrl,
   };
   return sortLeaderboard([...withoutCurrentUser, currentEntry]);
 }

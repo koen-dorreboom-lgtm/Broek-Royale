@@ -8,7 +8,7 @@ export const metadata = { title: "Account aanmaken" };
 export default function RegisterPage() {
   return (
     <>
-      <Link href="/" className="auth-back"><ArrowLeft size={22} />Broek-toto-Royale</Link>
+      <Link href="/" className="auth-back"><ArrowLeft size={22} />Broek Royale TOTO</Link>
       <CasinoCard className="form-card">
         <header className="form-intro">
           <UserPlus size={34} aria-hidden="true" />

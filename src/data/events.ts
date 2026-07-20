@@ -93,3 +93,13 @@ export const events: Event[] = [
     points: 100,
   },
 ];
+
+export const overallWinnerEvent: Event = {
+  id: "feestweek-winnaar",
+  name: "Algehele Feestweek 2026 winnaar",
+  startAt: "2026-08-08T17:30:00+02:00",
+  description: "Welk team verzamelt over de hele feestweek de meeste roem en kroont zich tot eindwinnaar?",
+  status: "scheduled",
+  winningTeamId: null,
+  points: 250,
+};

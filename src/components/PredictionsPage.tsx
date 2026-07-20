@@ -1,22 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { FlaskConical, Save } from "lucide-react";
+import { Crown, FlaskConical } from "lucide-react";
 import { EventPredictionCard } from "@/components/EventPredictionCard";
 import { ProtectedPage } from "@/components/ProtectedPage";
-import { InlineSuccess, PrimaryButton, ProgressBar } from "@/components/ui";
-import { events } from "@/data/events";
+import { ProgressBar } from "@/components/ui";
+import { events, overallWinnerEvent } from "@/data/events";
 import { isEventLocked, toDateTimeLocalValue } from "@/lib/dates";
 import { storage } from "@/lib/storage";
 import { useAuth } from "@/providers/AuthProvider";
 import type { Prediction } from "@/types";
+
+const predictionEvents = [...events, overallWinnerEvent];
 
 function PredictionsContent() {
   const { user } = useAuth();
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [currentDate, setCurrentDate] = useState(() => new Date());
-  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     if (!user) return;
@@ -37,11 +38,11 @@ function PredictionsContent() {
     () => Object.fromEntries(predictions.map((prediction) => [prediction.eventId, prediction.predictedTeamId])),
     [predictions],
   );
-  const completedCount = predictions.length;
+  const completedCount = predictionEvents.filter((event) => savedByEvent[event.id]).length;
 
   function saveEvent(eventId: string) {
     if (!user) return;
-    const event = events.find((item) => item.id === eventId);
+    const event = predictionEvents.find((item) => item.id === eventId);
     const teamId = drafts[eventId];
     if (!event || !teamId || isEventLocked(event.startAt, currentDate)) return;
 
@@ -58,37 +59,6 @@ function PredictionsContent() {
     const next = [...predictions.filter((prediction) => prediction.eventId !== eventId), nextPrediction];
     storage.setPredictions(user.id, next);
     setPredictions(next);
-    showSuccess("Je voorspelling is opgeslagen");
-  }
-
-  function saveAll() {
-    if (!user) return;
-    const now = new Date().toISOString();
-    const next = events.reduce<Prediction[]>((result, event) => {
-      const existing = predictions.find((prediction) => prediction.eventId === event.id);
-      const teamId = drafts[event.id];
-      if (isEventLocked(event.startAt, currentDate) || !teamId) {
-        if (existing) result.push(existing);
-        return result;
-      }
-      result.push({
-        id: existing?.id ?? `${user.id}-${event.id}`,
-        userId: user.id,
-        eventId: event.id,
-        predictedTeamId: teamId,
-        createdAt: existing?.createdAt ?? now,
-        updatedAt: now,
-      });
-      return result;
-    }, []);
-    storage.setPredictions(user.id, next);
-    setPredictions(next);
-    showSuccess("Je voorspellingen zijn opgeslagen");
-  }
-
-  function showSuccess(message: string) {
-    setSuccessMessage(message);
-    window.setTimeout(() => setSuccessMessage(""), 3500);
   }
 
   return (
@@ -100,8 +70,8 @@ function PredictionsContent() {
       </header>
 
       <section className="prediction-progress" aria-label="Voortgang">
-        <div><strong>{completedCount} van de {events.length}</strong><span> voorspellingen ingevuld</span></div>
-        <ProgressBar value={completedCount} max={events.length} />
+        <div><strong>{completedCount} van de {predictionEvents.length}</strong><span> voorspellingen ingevuld</span></div>
+        <ProgressBar value={completedCount} max={predictionEvents.length} />
       </section>
 
       {process.env.NODE_ENV === "development" && (
@@ -123,17 +93,32 @@ function PredictionsContent() {
             savedTeamId={savedByEvent[event.id] ?? ""}
             onChange={(teamId) => {
               setDrafts((current) => ({ ...current, [event.id]: teamId }));
-              setSuccessMessage("");
             }}
             onSave={() => saveEvent(event.id)}
           />
         ))}
       </div>
 
-      <div className="sticky-save">
-        {successMessage && <InlineSuccess>{successMessage}</InlineSuccess>}
-        <PrimaryButton type="button" onClick={saveAll}><Save size={19} />Stemmen opslaan</PrimaryButton>
-      </div>
+      <section className="overall-prediction" aria-labelledby="overall-winner-title">
+        <div className="overall-prediction__heading">
+          <Crown size={28} aria-hidden="true" />
+          <div>
+            <p>De grote finale</p>
+            <h2 id="overall-winner-title">Wie wint de hele Feestweek?</h2>
+          </div>
+          <span aria-hidden="true">♠</span>
+        </div>
+        <p className="overall-prediction__intro">Zet je belangrijkste voorspelling in: welk team wordt de algehele Feestweek 2026 winnaar? Deze voorspelling sluit bij de start van de feestweek.</p>
+        <EventPredictionCard
+          event={overallWinnerEvent}
+          currentDate={currentDate}
+          selectedTeamId={drafts[overallWinnerEvent.id] ?? ""}
+          savedTeamId={savedByEvent[overallWinnerEvent.id] ?? ""}
+          label={`${overallWinnerEvent.points} punten · Eindklassement`}
+          onChange={(teamId) => setDrafts((current) => ({ ...current, [overallWinnerEvent.id]: teamId }))}
+          onSave={() => saveEvent(overallWinnerEvent.id)}
+        />
+      </section>
     </>
   );
 }

@@ -9,7 +9,7 @@ export const metadata = { title: "Inloggen" };
 export default function LoginPage() {
   return (
     <>
-      <Link href="/" className="auth-back"><ArrowLeft size={22} />Broek-toto-Royale</Link>
+      <Link href="/" className="auth-back"><ArrowLeft size={22} />Broek Royale TOTO</Link>
       <CasinoCard className="form-card">
         <header className="form-intro">
           <ShieldCheck size={34} aria-hidden="true" />

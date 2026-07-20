@@ -9,6 +9,7 @@ import { useAuth } from "@/providers/AuthProvider";
 export function HomeContent() {
   const { user, isLoading } = useAuth();
   const completed = user ? storage.getPredictions(user.id).length : 0;
+  const totalPredictions = events.length + 1;
 
   return (
     <>
@@ -26,7 +27,7 @@ export function HomeContent() {
 
       <header className="page-heading home-heading">
         <p className="eyebrow">Broeker Feestweek 2026</p>
-        <h1>Welkom bij de Broek-toto-Royale</h1>
+        <h1>Welkom bij de Broek Royale TOTO</h1>
       </header>
 
       <CasinoCard className="welcome-card">
@@ -36,7 +37,7 @@ export function HomeContent() {
 
       {!isLoading && user ? (
         <div className="home-actions">
-          <p className="prediction-summary"><strong>{completed} van de {events.length}</strong> voorspellingen ingevuld voor <strong>{user.username}</strong>.</p>
+          <p className="prediction-summary"><strong>{completed} van de {totalPredictions}</strong> voorspellingen ingevuld voor <strong>{user.username}</strong>.</p>
           <ButtonLink href="/voorspellingen"><Vote size={19} />Naar mijn voorspellingen</ButtonLink>
         </div>
       ) : (

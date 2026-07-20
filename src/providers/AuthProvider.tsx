@@ -9,6 +9,7 @@ interface AuthContextValue {
   isLoading: boolean;
   login: (identity: string) => User;
   register: (user: Omit<User, "id">) => User;
+  updateProfile: (updates: Pick<User, "avatarUrl">) => void;
   logout: () => void;
 }
 
@@ -61,9 +62,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  const updateProfile = useCallback(
+    (updates: Pick<User, "avatarUrl">) => {
+      if (!user) return;
+      persistUser({ ...user, ...updates });
+    },
+    [user, persistUser],
+  );
+
   const value = useMemo(
-    () => ({ user, isLoading, login, register, logout }),
-    [user, isLoading, login, register, logout],
+    () => ({ user, isLoading, login, register, updateProfile, logout }),
+    [user, isLoading, login, register, updateProfile, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

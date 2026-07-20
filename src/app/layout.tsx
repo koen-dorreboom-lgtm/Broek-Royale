@@ -4,7 +4,7 @@ import { AppChrome } from "@/components/AppChrome";
 import { AuthProvider } from "@/providers/AuthProvider";
 
 export const metadata: Metadata = {
-  title: { default: "Broek-toto-Royale", template: "%s | Broek-toto-Royale" },
+  title: { default: "Broek Royale TOTO", template: "%s | Broek Royale TOTO" },
   description: "Voorspel de winnaars van de Broeker Feestweek 2026.",
 };
 
