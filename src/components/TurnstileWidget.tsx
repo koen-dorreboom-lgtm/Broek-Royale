@@ -54,7 +54,7 @@ export function TurnstileWidget({ action, onToken }: TurnstileWidgetProps) {
   }, [renderWidget]);
 
   if (!siteKey) {
-    return <p className="captcha-note">Botbeveiliging wordt actief zodra de Turnstile-sitekey is ingesteld.</p>;
+    return null;
   }
 
   return (

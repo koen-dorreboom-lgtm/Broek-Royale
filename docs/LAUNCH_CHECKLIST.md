@@ -4,12 +4,12 @@ Deze checklist bevat de handelingen die niet vanuit de broncode uitgevoerd kunne
 
 ## Uiterlijk 3 augustus
 
-- [ ] Controleer bij een registrar of `broekroyal.nl` beschikbaar is en registreer het. Gebruik anders `broekroyaletoto.nl` of tijdelijk het vaste Vercel-adres.
+- [x] `broekroyale.nl` is geregistreerd bij STRATO; wacht op afronding voordat DNS, Resend en productie-redirects worden ingesteld.
 - [ ] Laat de organisatie schriftelijk bevestigen dat naam, logo, casinostijl en het gebruik van “TOTO” akkoord zijn.
 - [ ] Maak twee Supabase-projecten: staging en productie.
 - [ ] Voer de migration uit en laad `supabase/seed.sql` in beide projecten.
 - [ ] Maak via Supabase Auth het account `koen-dorreboom@hotmail.nl` aan en controleer dat `profiles.role = 'admin'` is.
-- [ ] Zet e-mailbevestiging uit en CAPTCHA Protection met Cloudflare Turnstile aan.
+- [ ] Zet e-mailbevestiging uit. Activeer Cloudflare Turnstile alleen als aanvullende botbescherming gewenst blijkt.
 - [ ] Koppel GitHub-repository `koen-dorreboom-lgtm/Broek-Royale` aan Vercel. Kies `main` als Production Branch.
 - [ ] Zet Preview-variabelen op het stagingproject en Production-variabelen op het productieproject.
 
@@ -25,7 +25,7 @@ Deze checklist bevat de handelingen die niet vanuit de broncode uitgevoerd kunne
 
 ## Generale repetitie op 6 augustus
 
-- [ ] Test registratie, unieke gebruikersnaam, Turnstile, login, logout en wachtwoordherstel.
+- [ ] Test registratie, unieke gebruikersnaam, login, logout en wachtwoordherstel. Test Turnstile alleen wanneer deze optie wordt geactiveerd.
 - [ ] Test 10–20 echte telefoons op 320, 375, 390 en 430 pixels; iOS Safari en Android Chrome.
 - [ ] Test een voorspelling vóór en vanaf het startmoment met een tijdelijk stagingonderdeel.
 - [ ] Test uitslag, uitslagcorrectie, auditlog, punten, gelijke rang en avatarrechten.

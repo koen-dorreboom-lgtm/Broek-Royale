@@ -21,7 +21,7 @@ export default function PrivacyPage() {
       </CasinoCard>
       <CasinoCard>
         <h2>Doel, bewaartermijn en diensten</h2>
-        <p>De gegevens worden gebruikt voor accountbeheer, voorspellingen, puntentelling, misbruikpreventie en wachtwoordherstel. De app gebruikt Supabase voor accounts, database en foto-opslag, Vercel voor hosting, Cloudflare Turnstile voor botbescherming en Resend voor accountmails.</p>
+        <p>De gegevens worden gebruikt voor accountbeheer, voorspellingen, puntentelling, misbruikpreventie en wachtwoordherstel. De app gebruikt Supabase voor accounts, database en foto-opslag en Vercel voor hosting. Zodra accountmails worden geactiveerd, gebruikt de app daarnaast Resend voor het bezorgen daarvan.</p>
         <p>Uiterlijk <strong>1 oktober 2026</strong> verwijderen we persoonsgegevens, Auth-accounts, voorspellingen en profielfoto’s. Alleen een niet tot personen herleidbare eindstand mag daarna bewaard blijven.</p>
       </CasinoCard>
       <CasinoCard>

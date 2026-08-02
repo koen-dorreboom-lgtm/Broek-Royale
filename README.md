@@ -8,7 +8,7 @@ Mobiele Nederlandstalige voorspelling-app voor de Broeker Feestweek 2026. Deelne
 - Tailwind CSS 4 en projectspecifieke CSS
 - Supabase Auth, Postgres, Row Level Security en Storage
 - Supabase SSR-cookies voor server-side routebeveiliging
-- Cloudflare Turnstile op registratie, login en wachtwoordherstel
+- Optioneel voorbereide Cloudflare Turnstile-integratie voor botbescherming
 - Resend via Supabase Custom SMTP voor herstelmails
 - Vercel voor Preview- en Production-deployments
 - GitHub Actions voor lint en productiebuild
@@ -23,7 +23,7 @@ copy .env.example .env.local
 npm run dev
 ```
 
-Vul in `.env.local` de waarden van het Supabase-stagingproject en de Turnstile-testsite in. Open daarna `http://localhost:3000`.
+Vul in `.env.local` de waarden van het Supabase-stagingproject in. De Turnstile-sitekey is optioneel en alleen nodig wanneer botbescherming wordt geactiveerd. Open daarna `http://localhost:3000`.
 
 Kwaliteitscontrole:
 
@@ -40,7 +40,7 @@ Met een draaiende lokale Supabase-stack kunnen de database- en RLS-tests worden 
 | `NEXT_PUBLIC_SUPABASE_URL` | staging | staging | productie |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | staging | staging | productie |
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` | Preview-origin of stabiele staging-URL | definitief HTTPS-domein |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | test/staging | staging | productie |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | optioneel | optioneel | optioneel |
 
 De publishable key mag in de browser staan; beveiliging komt uit Auth en RLS. Zet **geen** Supabase service-role-key, Turnstile-secret, SMTP-wachtwoord of Resend API-key in de browser, repository of een `NEXT_PUBLIC_`-variabele.
 
@@ -69,9 +69,9 @@ Maak het adminaccount handmatig vóór open registratie en controleer de rol in 
 
 ## Authenticatie en e-mail
 
-Registratie gebruikt e-mail/wachtwoord en maakt na succesvolle signup een profieltrigger aan. E-mailbevestiging staat volgens de gekozen spelopzet uit. Schakel in Supabase Auth CAPTCHA Protection in en voeg daar het Turnstile-secret toe.
+Registratie gebruikt e-mail/wachtwoord en maakt na succesvolle signup een profieltrigger aan. E-mailbevestiging staat volgens de gekozen spelopzet uit. Turnstile is voorbereid maar niet vereist; wanneer het later wordt geactiveerd, moeten zowel de publieke sitekey als CAPTCHA Protection met het geheime token in Supabase worden ingesteld.
 
-Configureer Resend als Supabase Custom SMTP met een geverifieerd subdomein, bijvoorbeeld `no-reply@auth.broekroyal.nl`. Publiceer SPF, DKIM en DMARC. Voeg in Supabase Auth de volgende URLs toe:
+Configureer Resend als Supabase Custom SMTP met een geverifieerd subdomein, bijvoorbeeld `no-reply@auth.broekroyale.nl`. Publiceer SPF, DKIM en DMARC. Voeg in Supabase Auth de volgende URLs toe:
 
 - `SITE_URL`: het definitieve productiedomein;
 - `http://localhost:3000/**` en `http://127.0.0.1:3000/**` voor lokaal;
@@ -100,7 +100,7 @@ Configureer Resend als Supabase Custom SMTP met een geverifieerd subdomein, bijv
 
 Koppel `koen-dorreboom-lgtm/Broek-Royale` aan Vercel en stel `main` in als Production Branch. Pull requests krijgen een Preview Deployment met stagingvariabelen; een merge naar `main` gebruikt productievariabelen. GitHub Actions voert bij iedere pull request en push naar `main` lint en build uit.
 
-Registreer bij voorkeur `broekroyal.nl`; als dit niet beschikbaar is, gebruik `broekroyaletoto.nl` of tijdelijk het vaste Vercel-adres. Een ontbrekend DNS-record bewijst niet dat een domein vrij is. Koppel na registratie het domein in Vercel en forceer HTTPS.
+Het domein `broekroyale.nl` is geregistreerd bij STRATO. Totdat de registratie en DNS-configuratie gereed zijn, blijft de Vercel-Preview de stagingomgeving. Koppel het domein daarna in Vercel en forceer HTTPS.
 
 ## Scoring en privacy
 
@@ -116,7 +116,7 @@ Gebruikersnaam en avatar zijn openbaar. Naam en e-mail worden niet door de leade
 ## Openstaande acties
 
 - Definitieve teamnamen, programma, hoofdprijs en organisatieteksten bevestigen.
-- Supabase staging/productie, Turnstile, Resend, Vercel en DNS in de externe dashboards configureren.
+- Supabase-productie, Resend, Vercel en DNS in de externe dashboards configureren; Turnstile blijft een optionele maatregel bij misbruik.
 - RLS- en belastingtests tegen staging uitvoeren en bewijs bewaren.
 - Organisatiegoedkeuring voor naam, logo, casinostijl en “TOTO” vastleggen.
 - Na de feestweek de verwijderprocedure op 1 oktober uitvoeren.
