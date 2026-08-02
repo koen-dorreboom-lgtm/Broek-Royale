@@ -5,9 +5,8 @@ import { CalendarDays, Check, Clock3, LockKeyhole } from "lucide-react";
 import { CasinoCard, PrimaryButton } from "@/components/ui";
 import { StatusBadge } from "@/components/StatusBadge";
 import { TeamSelect } from "@/components/TeamSelect";
-import { teams } from "@/data/teams";
 import { formatEventDate, formatEventTime, getEventStatus, isEventLocked } from "@/lib/dates";
-import type { Event } from "@/types";
+import type { Event, Team } from "@/types";
 
 interface EventPredictionCardProps {
   event: Event;
@@ -16,10 +15,13 @@ interface EventPredictionCardProps {
   savedTeamId: string;
   label?: string;
   onChange: (teamId: string) => void;
-  onSave: () => void;
+  onSave: () => Promise<void>;
+  teams: Team[];
+  isSaving?: boolean;
+  saveError?: string;
 }
 
-export function EventPredictionCard({ event, currentDate, selectedTeamId, savedTeamId, label, onChange, onSave }: EventPredictionCardProps) {
+export function EventPredictionCard({ event, currentDate, selectedTeamId, savedTeamId, label, onChange, onSave, teams, isSaving = false, saveError }: EventPredictionCardProps) {
   const [selectionError, setSelectionError] = useState("");
   const locked = isEventLocked(event.startAt, currentDate);
   const isSaved = Boolean(savedTeamId) && savedTeamId === selectedTeamId;
@@ -48,6 +50,7 @@ export function EventPredictionCard({ event, currentDate, selectedTeamId, savedT
           onChange(teamId);
         }}
         disabled={locked}
+        teams={teams}
       />
       {locked ? (
         <div className="locked-result">
@@ -65,13 +68,14 @@ export function EventPredictionCard({ event, currentDate, selectedTeamId, savedT
                 return;
               }
               setSelectionError("");
-              onSave();
+              void onSave();
             }}
-            disabled={isSaved}
+            disabled={isSaved || isSaving}
           >
-            <Check size={17} />{isSaved ? "Opgeslagen" : "Stem opslaan"}
+            <Check size={17} />{isSaving ? "Opslaan…" : isSaved ? "Opgeslagen" : "Stem opslaan"}
           </PrimaryButton>
           {selectionError && <p className="form-error event-save-error" role="alert">{selectionError}</p>}
+          {saveError && <p className="form-error event-save-error" role="alert">{saveError}</p>}
         </>
       )}
     </CasinoCard>

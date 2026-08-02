@@ -141,6 +141,13 @@ h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; }
 .form-error { margin: 5px 0 0; color: #9a1119; font-size: 13px; }
 .form-footer { margin: 20px 0 0; color: var(--muted); text-align: center; }
 .text-link { color: var(--burgundy); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.form-inline-link { margin-top: -9px; font-size: 13px; text-align: right; }
+.form-error--summary { padding: 10px; border-left: 3px solid #9a1119; background: #fff1ef; }
+.terms-check { display: flex; align-items: flex-start; gap: 10px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.terms-check input { width: 19px; height: 19px; flex: 0 0 19px; margin-top: 1px; accent-color: var(--burgundy); }
+.terms-check a { color: var(--burgundy); font-weight: 700; text-decoration: underline; }
+.turnstile-wrap { display: grid; min-height: 65px; overflow: hidden; place-items: center; }
+.captcha-note { margin: 0; padding: 9px 10px; border: 1px dashed #b99b6a; color: #594400; background: #fff9df; font-size: 11px; }
 
 .progress { width: 100%; height: 9px; overflow: hidden; border: 1px solid #b99b6a; border-radius: 999px; background: #e6ddc7; }
 .progress__fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--burgundy), var(--gold)); transition: width .25s; }
@@ -282,6 +289,7 @@ h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; }
 .you-badge { padding: 3px 5px; border-radius: 2px; color: #fff; background: var(--burgundy); font-size: 9px; font-weight: 800; text-transform: uppercase; }
 .current-position { margin-top: 20px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); }
 .current-position > p { margin: 0; padding: 8px 13px; color: var(--burgundy); font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.leaderboard-refresh-note { margin: 16px auto 0; max-width: 350px; color: var(--muted); font-size: 11px; text-align: center; }
 
 .profile-heading { margin-top: 10px; }
 .profile-heading h1 { color: var(--ink); font-size: clamp(35px, 10vw, 48px); }
@@ -320,6 +328,31 @@ h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; }
 .admin-event h2 { margin: 0; font-size: 25px; line-height: 1.1; overflow-wrap: anywhere; }
 .admin-event > label { color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .admin-event .notice { margin-top: -3px; }
+.admin-event--overall { border-color: var(--gold); background: linear-gradient(145deg, #fffdf4, #fff5cf); }
+.admin-event__actions { display: grid; gap: 9px; }
+.admin-clear { display: inline-flex; min-height: 38px; cursor: pointer; align-items: center; justify-content: center; gap: 6px; border: 0; color: var(--burgundy); background: transparent; font-size: 11px; font-weight: 800; text-decoration: underline; }
+.admin-clear:disabled { cursor: not-allowed; opacity: .5; }
+.audit-card { margin-top: 24px; }
+.audit-card__title { display: flex; align-items: center; gap: 8px; color: var(--burgundy); }
+.audit-card__title h2 { margin: 0; font-size: 25px; }
+.audit-card > p { color: var(--muted); font-size: 13px; }
+.audit-list { margin: 16px 0 0; padding: 0; list-style: none; }
+.audit-list li { display: grid; gap: 2px; padding: 11px 0; border-top: 1px solid #ead9d1; font-size: 12px; }
+.audit-list span, .audit-list time { color: var(--muted); }
+.audit-list time { font-size: 10px; }
+
+.legal-page { display: grid; gap: 16px; }
+.legal-page .page-heading { margin-bottom: 6px; }
+.legal-page .casino-card { box-shadow: 2px 3px 0 rgba(114,0,10,.08); }
+.legal-page h2 { margin: 4px 0 10px; color: var(--burgundy); font-size: 26px; }
+.legal-page p, .legal-page li { color: var(--muted); line-height: 1.65; }
+.legal-page ol { margin: 0; padding-left: 22px; }
+.legal-page li + li { margin-top: 7px; }
+.legal-page a { color: var(--burgundy); font-weight: 700; text-decoration: underline; overflow-wrap: anywhere; }
+.legal-updated { margin: 0; font-size: 11px; text-align: center; }
+.site-footer { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 32px; color: var(--muted); font-size: 11px; }
+.site-footer a { text-decoration: underline; text-underline-offset: 3px; }
+.site-footer span { color: var(--burgundy); }
 
 @media (min-width: 600px) {
   .app-main { padding-inline: 24px; }

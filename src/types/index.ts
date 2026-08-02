@@ -1,5 +1,7 @@
 export type EventLifecycleStatus = "scheduled" | "completed";
 export type EventStatus = "open" | "closingSoon" | "closed" | "saved";
+export type UserRole = "participant" | "admin";
+export type EventKind = "onderdeel" | "overall";
 
 export interface User {
   id: string;
@@ -8,11 +10,15 @@ export interface User {
   username: string;
   email: string;
   avatarUrl?: string;
+  avatarPath?: string;
+  role: UserRole;
 }
 
 export interface Team {
   id: string;
   name: string;
+  sortOrder?: number;
+  isActive?: boolean;
 }
 
 export interface Event {
@@ -23,6 +29,8 @@ export interface Event {
   status: EventLifecycleStatus;
   winningTeamId: string | null;
   points: number;
+  sortOrder?: number;
+  kind?: EventKind;
 }
 
 export interface Prediction {
@@ -41,4 +49,13 @@ export interface LeaderboardEntry {
   points: number;
   correctPredictions: number;
   avatarUrl?: string;
+  position?: number;
+}
+
+export interface ResultAuditEntry {
+  id: number;
+  eventId: string;
+  previousTeamId: string | null;
+  winningTeamId: string | null;
+  changedAt: string;
 }

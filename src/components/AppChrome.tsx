@@ -3,8 +3,9 @@
 import { usePathname } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
 import { BottomNavigation } from "@/components/BottomNavigation";
+import { SiteFooter } from "@/components/SiteFooter";
 
-const QUIET_ROUTES = ["/inloggen", "/registreren"];
+const QUIET_ROUTES = ["/inloggen", "/registreren", "/wachtwoord-vergeten", "/wachtwoord-wijzigen"];
 
 export function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -13,7 +14,7 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
   return (
     <div className={`app-frame ${isQuietRoute ? "app-frame--quiet" : ""}`}>
       {!isQuietRoute && <AppHeader />}
-      <main className="app-main">{children}</main>
+      <main className="app-main">{children}<SiteFooter /></main>
       {!isQuietRoute && <BottomNavigation />}
     </div>
   );

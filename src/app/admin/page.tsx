@@ -1,6 +1,6 @@
 import { AdminPage } from "@/components/AdminPage";
 
-export const metadata = { title: "Beheerdemo" };
+export const metadata = { title: "Beheer" };
 
 export default function AdminRoute() {
   return <AdminPage />;

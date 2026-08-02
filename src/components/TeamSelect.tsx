@@ -1,13 +1,14 @@
-import { teams } from "@/data/teams";
+import type { Team } from "@/types";
 
 interface TeamSelectProps {
   id: string;
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  teams: Team[];
 }
 
-export function TeamSelect({ id, value, onChange, disabled = false }: TeamSelectProps) {
+export function TeamSelect({ id, value, onChange, teams, disabled = false }: TeamSelectProps) {
   return (
     <div className="team-select">
       <label htmlFor={id}>Winnende team</label>

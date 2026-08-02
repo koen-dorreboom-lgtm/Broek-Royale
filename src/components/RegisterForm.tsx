@@ -1,10 +1,11 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { FormField } from "@/components/FormField";
+import { TurnstileWidget } from "@/components/TurnstileWidget";
 import { PrimaryButton } from "@/components/ui";
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -21,18 +22,22 @@ const initialValues: FormValues = { firstName: "", lastName: "", email: "", user
 
 export function RegisterForm() {
   const [values, setValues] = useState(initialValues);
-  const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof FormValues | "form" | "terms", string>>>({});
   const [showPassword, setShowPassword] = useState(false);
-  const { register } = useAuth();
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { register, configurationError } = useAuth();
   const router = useRouter();
+  const handleCaptchaToken = useCallback((token: string | undefined) => setCaptchaToken(token), []);
 
   function update(field: keyof FormValues, value: string) {
     setValues((current) => ({ ...current, [field]: value }));
   }
 
-  function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    const nextErrors: Partial<Record<keyof FormValues, string>> = {};
+    const nextErrors: Partial<Record<keyof FormValues | "form" | "terms", string>> = {};
     if (!values.firstName.trim()) nextErrors.firstName = "Vul je voornaam in.";
     if (!values.lastName.trim()) nextErrors.lastName = "Vul je achternaam in.";
     if (!values.email.trim()) nextErrors.email = "Vul je e-mailadres in.";
@@ -43,17 +48,27 @@ export function RegisterForm() {
     else if (values.password.length < 8) nextErrors.password = "Je wachtwoord moet minimaal 8 tekens bevatten.";
     if (!values.confirmPassword) nextErrors.confirmPassword = "Herhaal je wachtwoord.";
     else if (values.password !== values.confirmPassword) nextErrors.confirmPassword = "De wachtwoorden zijn niet gelijk.";
+    if (!acceptedTerms) nextErrors.terms = "Ga akkoord met de spelregels en privacyverklaring.";
+    if (configurationError) nextErrors.form = configurationError;
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
-    // TODO: vervang registratie en sessieopslag door Supabase Auth + profiles-tabel.
-    register({
+    setIsSubmitting(true);
+    const authError = await register({
       firstName: values.firstName.trim(),
       lastName: values.lastName.trim(),
       email: values.email.trim(),
       username: values.username.trim(),
+      password: values.password,
+      captchaToken,
     });
+    setIsSubmitting(false);
+    if (authError) {
+      setErrors({ form: authError });
+      return;
+    }
     router.replace("/voorspellingen");
+    router.refresh();
   }
 
   return (
@@ -61,7 +76,7 @@ export function RegisterForm() {
       <FormField id="firstName" label="Voornaam" autoComplete="given-name" value={values.firstName} onChange={(event) => update("firstName", event.target.value)} error={errors.firstName} />
       <FormField id="lastName" label="Achternaam" autoComplete="family-name" value={values.lastName} onChange={(event) => update("lastName", event.target.value)} error={errors.lastName} />
       <FormField id="email" label="E-mailadres" type="email" autoComplete="email" value={values.email} onChange={(event) => update("email", event.target.value)} error={errors.email} />
-      <FormField id="username" label="Gebruikersnaam" autoComplete="username" minLength={3} value={values.username} onChange={(event) => update("username", event.target.value)} error={errors.username} />
+      <FormField id="username" label="Gebruikersnaam" autoComplete="username" minLength={3} maxLength={30} value={values.username} onChange={(event) => update("username", event.target.value)} error={errors.username} />
       <FormField
         id="registerPassword"
         label="Wachtwoord"
@@ -73,7 +88,14 @@ export function RegisterForm() {
         trailing={<button type="button" className="field-trailing" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? "Wachtwoorden verbergen" : "Wachtwoorden tonen"}>{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}</button>}
       />
       <FormField id="confirmPassword" label="Wachtwoord herhalen" type={showPassword ? "text" : "password"} autoComplete="new-password" value={values.confirmPassword} onChange={(event) => update("confirmPassword", event.target.value)} error={errors.confirmPassword} />
-      <PrimaryButton type="submit"><UserPlus size={19} />Account aanmaken</PrimaryButton>
+      <label className="terms-check">
+        <input type="checkbox" checked={acceptedTerms} onChange={(event) => setAcceptedTerms(event.target.checked)} />
+        <span>Ik ga akkoord met de <Link href="/spelregels">spelregels</Link> en heb de <Link href="/privacy">privacyverklaring</Link> gelezen.</span>
+      </label>
+      {errors.terms && <p className="form-error" role="alert">{errors.terms}</p>}
+      <TurnstileWidget action="register" onToken={handleCaptchaToken} />
+      {errors.form && <p className="form-error form-error--summary" role="alert">{errors.form}</p>}
+      <PrimaryButton type="submit" disabled={isSubmitting}><UserPlus size={19} />{isSubmitting ? "Account aanmaken…" : "Account aanmaken"}</PrimaryButton>
       <p className="form-footer">Heb je al een account? <Link href="/inloggen" className="text-link">Log in</Link></p>
     </form>
   );
