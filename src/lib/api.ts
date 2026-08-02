@@ -38,7 +38,7 @@ interface PredictionRow {
 }
 
 interface LeaderboardRow {
-  position: number;
+  rank_position: number;
   user_id: string;
   username: string;
   avatar_path: string | null;
@@ -152,7 +152,7 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
     points: entry.points,
     correctPredictions: entry.correct_predictions,
     avatarUrl: getAvatarUrl(entry.avatar_path),
-    position: entry.position,
+    position: entry.rank_position,
   }));
 }
 

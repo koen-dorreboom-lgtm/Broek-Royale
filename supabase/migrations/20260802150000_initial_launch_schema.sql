@@ -179,7 +179,7 @@ for each row execute function public.audit_result_change();
 
 create or replace function public.get_public_leaderboard()
 returns table (
-  position bigint,
+  rank_position bigint,
   user_id uuid,
   username text,
   avatar_path text,
@@ -214,19 +214,19 @@ as $$
     group by profile.id, profile.username, profile.avatar_path
   ), ranked as (
     select
-      rank() over (order by points desc, correct_predictions desc) as position,
+      rank() over (order by points desc, correct_predictions desc) as rank_position,
       scores.*
     from scores
   )
   select
-    ranked.position,
+    ranked.rank_position,
     ranked.user_id,
     ranked.username,
     ranked.avatar_path,
     ranked.points,
     ranked.correct_predictions
   from ranked
-  order by ranked.position, ranked.username;
+  order by ranked.rank_position, ranked.username;
 $$;
 
 alter table public.profiles enable row level security;
