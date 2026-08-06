@@ -64,9 +64,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       window.setTimeout(() => {
         void loadUser(session?.user ?? null).catch(() => setUser(null));
+
+        // Supabase's standard recovery email first establishes a recovery
+        // session in the browser. Continue to the password form as soon as
+        // that session is available, including for links sent before the
+        // server callback below was introduced.
+        if (event === "PASSWORD_RECOVERY" && window.location.pathname !== "/wachtwoord-wijzigen") {
+          window.location.replace("/wachtwoord-wijzigen");
+        }
       }, 0);
     });
 
@@ -121,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, "");
       const { error } = await createClient().auth.resetPasswordForEmail(email, {
-        redirectTo: `${siteUrl}/auth/herstellen`,
+        redirectTo: `${siteUrl}/auth/callback?next=/wachtwoord-wijzigen`,
         captchaToken,
       });
       return error ? getDutchAuthError(error.message) : null;
