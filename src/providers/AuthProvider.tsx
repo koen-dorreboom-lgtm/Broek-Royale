@@ -107,6 +107,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       });
       if (error) return getDutchAuthError(error.message);
+      if (!data.session) {
+        return "Je account is aangemaakt, maar wacht nog op e-mailbevestiging. Controleer je inbox.";
+      }
       if (data.user) await loadUser(data.user);
       return null;
     } catch (error) {
