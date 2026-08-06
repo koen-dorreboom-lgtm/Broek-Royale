@@ -7,4 +7,5 @@
 .env*
 !.env.example
 /supabase/.temp/
+/supabase/.temp-*/
 /supabase/.branches/
