@@ -1,5 +1,5 @@
 export type EventLifecycleStatus = "scheduled" | "completed";
-export type EventStatus = "open" | "closingSoon" | "closed" | "saved";
+export type EventStatus = "open" | "closed" | "saved";
 export type UserRole = "participant" | "admin";
 export type EventKind = "onderdeel" | "overall";
 
@@ -28,6 +28,7 @@ export interface Event {
   description: string;
   status: EventLifecycleStatus;
   winningTeamId: string | null;
+  lockedAt: string | null;
   points: number;
   sortOrder?: number;
   kind?: EventKind;

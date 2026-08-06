@@ -10,7 +10,6 @@ import type { Event, Team } from "@/types";
 
 interface EventPredictionCardProps {
   event: Event;
-  currentDate: Date;
   selectedTeamId: string;
   savedTeamId: string;
   label?: string;
@@ -21,11 +20,11 @@ interface EventPredictionCardProps {
   saveError?: string;
 }
 
-export function EventPredictionCard({ event, currentDate, selectedTeamId, savedTeamId, label, onChange, onSave, teams, isSaving = false, saveError }: EventPredictionCardProps) {
+export function EventPredictionCard({ event, selectedTeamId, savedTeamId, label, onChange, onSave, teams, isSaving = false, saveError }: EventPredictionCardProps) {
   const [selectionError, setSelectionError] = useState("");
-  const locked = isEventLocked(event.startAt, currentDate);
+  const locked = isEventLocked(event.lockedAt);
   const isSaved = Boolean(savedTeamId) && savedTeamId === selectedTeamId;
-  const status = getEventStatus(event.startAt, currentDate, isSaved);
+  const status = getEventStatus(event.lockedAt, isSaved);
   const savedTeam = teams.find((team) => team.id === savedTeamId);
 
   return (

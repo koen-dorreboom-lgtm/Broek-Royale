@@ -53,7 +53,7 @@ npx supabase link --project-ref <project-ref>
 npx supabase db push
 ```
 
-Laad daarna `supabase/seed.sql`. Dit bestand bevat voorlopig Team 1 t/m Team 12, de tien onderdelen van 8–16 augustus en de algehele winnaar die op 8 augustus om 17:30 sluit. Pas de seed vóór openstelling aan met de definitieve namen en tijden.
+Laad daarna `supabase/seed.sql`. Dit bestand bevat voorlopig Team 1 t/m Team 12, de tien onderdelen van 8–16 augustus en de algehele winnaar. De starttijden zijn informatief; een beheerder sluit iedere stemming handmatig via `/admin`. Pas de seed vóór openstelling aan met de definitieve namen en tijden.
 
 De migration maakt:
 

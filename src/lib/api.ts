@@ -26,6 +26,7 @@ interface EventRow {
   sort_order: number;
   kind: "onderdeel" | "overall";
   winning_team_id: string | null;
+  locked_at: string | null;
 }
 
 interface PredictionRow {
@@ -89,7 +90,7 @@ export async function getTeams(): Promise<Team[]> {
 export async function getEvents(): Promise<Event[]> {
   const { data, error } = await createClient()
     .from("events")
-    .select("id, name, description, start_at, points, sort_order, kind, winning_team_id")
+    .select("id, name, description, start_at, points, sort_order, kind, winning_team_id, locked_at")
     .order("sort_order");
   if (error) throw error;
   return (data as EventRow[]).map((event) => ({
@@ -102,6 +103,7 @@ export async function getEvents(): Promise<Event[]> {
     kind: event.kind,
     status: event.winning_team_id ? "completed" : "scheduled",
     winningTeamId: event.winning_team_id,
+    lockedAt: event.locked_at,
   }));
 }
 
@@ -211,6 +213,14 @@ export async function saveEventResult(eventId: string, teamId: string | null): P
     .from("events")
     .update({ winning_team_id: teamId })
     .eq("id", eventId);
+  if (error) throw error;
+}
+
+export async function setEventLocked(eventId: string, isLocked: boolean): Promise<void> {
+  const { error } = await createClient().rpc("set_event_locked", {
+    target_event_id: eventId,
+    should_lock: isLocked,
+  });
   if (error) throw error;
 }
 

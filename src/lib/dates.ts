@@ -1,21 +1,18 @@
-import { differenceInMinutes } from "date-fns";
 import type { EventStatus } from "@/types";
 
 export const APP_TIME_ZONE = "Europe/Amsterdam";
 
-export function isEventLocked(eventStartDate: string | Date, currentDate: Date): boolean {
-  const start = typeof eventStartDate === "string" ? new Date(eventStartDate) : eventStartDate;
-  return currentDate.getTime() >= start.getTime();
+export function isEventLocked(lockedAt: string | null): boolean {
+  return lockedAt !== null;
 }
 
-export function getEventStatus(
-  eventStartDate: string,
-  currentDate: Date,
-  isSaved: boolean,
-): EventStatus {
-  if (isEventLocked(eventStartDate, currentDate)) return "closed";
-  if (differenceInMinutes(new Date(eventStartDate), currentDate) <= 60) return "closingSoon";
+export function getEventStatus(lockedAt: string | null, isSaved: boolean): EventStatus {
+  if (isEventLocked(lockedAt)) return "closed";
   return isSaved ? "saved" : "open";
+}
+
+export function isEventStartPast(eventStartDate: string, currentDate: Date): boolean {
+  return currentDate.getTime() >= new Date(eventStartDate).getTime();
 }
 
 const dateFormatter = new Intl.DateTimeFormat("nl-NL", {
@@ -38,17 +35,4 @@ export function formatEventDate(date: string): string {
 
 export function formatEventTime(date: string): string {
   return timeFormatter.format(new Date(date));
-}
-
-export function toDateTimeLocalValue(date: Date): string {
-  const parts = new Intl.DateTimeFormat("sv-SE", {
-    timeZone: APP_TIME_ZONE,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).format(date);
-  return parts.replace(" ", "T");
 }

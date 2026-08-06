@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { History, RotateCcw, Save, ShieldCheck } from "lucide-react";
-import { CasinoCard, InlineSuccess, PrimaryButton } from "@/components/ui";
+import { AlertTriangle, CalendarDays, Clock3, History, LockKeyhole, LockOpen, RotateCcw, Save, ShieldCheck } from "lucide-react";
+import { CasinoCard, InlineSuccess, PrimaryButton, SecondaryButton } from "@/components/ui";
 import { StatusBadge } from "@/components/StatusBadge";
-import { getEvents, getResultAudit, getTeams, saveEventResult } from "@/lib/api";
-import { getEventStatus } from "@/lib/dates";
+import { getEvents, getResultAudit, getTeams, saveEventResult, setEventLocked } from "@/lib/api";
+import { formatEventDate, formatEventTime, getEventStatus, isEventStartPast } from "@/lib/dates";
 import { useAuth } from "@/providers/AuthProvider";
 import type { Event, ResultAuditEntry, Team } from "@/types";
 
@@ -16,7 +16,9 @@ export function AdminPage() {
   const [audit, setAudit] = useState<ResultAuditEntry[]>([]);
   const [draftResults, setDraftResults] = useState<Record<string, string>>({});
   const [savingEvent, setSavingEvent] = useState("");
+  const [updatingLock, setUpdatingLock] = useState("");
   const [savedEvent, setSavedEvent] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -51,6 +53,10 @@ export function AdminPage() {
   const teamNames = useMemo(() => new Map(teams.map((team) => [team.id, team.name])), [teams]);
 
   async function storeResult(event: Event, teamId: string | null) {
+    if (!event.lockedAt) {
+      setError("Sluit de stemming voordat je een uitslag opslaat.");
+      return;
+    }
     const nextName = teamId ? teamNames.get(teamId) : "geen uitslag";
     const prompt = event.winningTeamId
       ? `Weet je zeker dat je de uitslag van ${event.name} corrigeert naar ${nextName}?`
@@ -59,16 +65,49 @@ export function AdminPage() {
 
     setSavingEvent(event.id);
     setSavedEvent("");
+    setSuccessMessage("");
     setError("");
     try {
       await saveEventResult(event.id, teamId);
       await loadAdminData();
       setSavedEvent(event.id);
+      setSuccessMessage("Uitslag opgeslagen; de stand is herberekend.");
       window.setTimeout(() => setSavedEvent(""), 3000);
     } catch {
       setError("De uitslag kon niet worden opgeslagen. Controleer je beheerdersrechten en probeer opnieuw.");
     } finally {
       setSavingEvent("");
+    }
+  }
+
+  async function updateLock(event: Event) {
+    const willLock = !event.lockedAt;
+    if (!willLock && event.winningTeamId) {
+      setError("Trek eerst de uitslag in voordat je deze stemming heropent.");
+      return;
+    }
+
+    const prompt = willLock
+      ? `Weet je zeker dat je de stemming voor ${event.name} sluit? Gebruikers kunnen daarna niet meer stemmen.`
+      : `Weet je zeker dat je de stemming voor ${event.name} heropent? Gebruikers kunnen hun voorspelling dan weer aanpassen.`;
+    if (!window.confirm(prompt)) return;
+
+    setUpdatingLock(event.id);
+    setSavedEvent("");
+    setSuccessMessage("");
+    setError("");
+    try {
+      await setEventLocked(event.id, willLock);
+      await loadAdminData();
+      setSavedEvent(event.id);
+      setSuccessMessage(willLock ? "Stemming gesloten." : "Stemming heropend.");
+      window.setTimeout(() => setSavedEvent(""), 3000);
+    } catch {
+      setError(willLock
+        ? "De stemming kon niet worden gesloten. Probeer het opnieuw."
+        : "De stemming kon niet worden heropend. Trek zo nodig eerst de uitslag in.");
+    } finally {
+      setUpdatingLock("");
     }
   }
 
@@ -80,23 +119,61 @@ export function AdminPage() {
     <>
       <header className="page-heading page-heading--left admin-heading">
         <p className="eyebrow">Beveiligd beheer</p>
-        <h1>Uitslagen</h1>
-        <p>Leg de officiële winnaar vast. Iedere wijziging wordt bewaard en de stand wordt automatisch herberekend.</p>
+        <h1>Stemmingen en uitslagen</h1>
+        <p>Sluit iedere stemming handmatig en leg daarna de officiële winnaar vast. De stand wordt automatisch herberekend.</p>
       </header>
       <div className="notice notice--warning admin-warning">
         <ShieldCheck size={21} />
-        <span><strong>Let op.</strong> Controleer de uitslag vóór opslaan. Correcties zijn mogelijk en blijven zichtbaar in het wijzigingslog.</span>
+        <span><strong>Let op.</strong> De starttijd sluit een stemming niet automatisch. Sluit ieder onderdeel hier handmatig en controleer daarna de uitslag vóór opslaan.</span>
       </div>
       {(configurationError || error) && <div className="notice notice--warning" role="alert">{configurationError || error}</div>}
       {isLoading ? <div className="loading-state" role="status"><p>Beheer laden…</p></div> : (
         <div className="admin-list">
           {events.map((event) => {
             const hasResult = Boolean(event.winningTeamId);
+            const isLocked = Boolean(event.lockedAt);
+            const startHasPassed = isEventStartPast(event.startAt, new Date());
             return (
               <CasinoCard key={event.id} className={event.kind === "overall" ? "admin-event admin-event--overall" : "admin-event"}>
                 <div className="admin-event__heading">
                   <div><p className="event-number">{event.kind === "overall" ? "Algehele winnaar" : `Onderdeel ${event.sortOrder}`}</p><h2>{event.name}</h2></div>
-                  <StatusBadge status={getEventStatus(event.startAt, new Date(), hasResult)} />
+                  <StatusBadge status={getEventStatus(event.lockedAt, false)} />
+                </div>
+                <div className="admin-event__schedule">
+                  <span><CalendarDays size={15} />{formatEventDate(event.startAt)}</span>
+                  <span><Clock3 size={15} />{formatEventTime(event.startAt)} uur</span>
+                </div>
+                {!isLocked && startHasPassed && (
+                  <div className="notice notice--warning admin-event__overdue" role="alert">
+                    <AlertTriangle size={18} />
+                    <span>De starttijd is verstreken, maar deze stemming staat nog open.</span>
+                  </div>
+                )}
+                {isLocked && event.lockedAt && (
+                  <p className="admin-event__locked-at">Gesloten op {formatEventDate(event.lockedAt)} om {formatEventTime(event.lockedAt)} uur.</p>
+                )}
+                <div className="admin-lock-actions">
+                  {isLocked ? (
+                    <SecondaryButton
+                      type="button"
+                      className="button--small"
+                      onClick={() => void updateLock(event)}
+                      disabled={updatingLock === event.id || hasResult}
+                      title={hasResult ? "Trek eerst de uitslag in" : undefined}
+                    >
+                      <LockOpen size={16} />{updatingLock === event.id ? "Heropenen…" : "Stemming heropenen"}
+                    </SecondaryButton>
+                  ) : (
+                    <PrimaryButton
+                      type="button"
+                      className="button--small"
+                      onClick={() => void updateLock(event)}
+                      disabled={updatingLock === event.id}
+                    >
+                      <LockKeyhole size={16} />{updatingLock === event.id ? "Sluiten…" : "Stemming sluiten"}
+                    </PrimaryButton>
+                  )}
+                  {isLocked && hasResult && <p>Trek eerst de uitslag in als je de stemming wilt heropenen.</p>}
                 </div>
                 <label htmlFor={`result-${event.id}`}>Winnende team</label>
                 <select
@@ -104,8 +181,9 @@ export function AdminPage() {
                   className="admin-select"
                   value={draftResults[event.id] ?? ""}
                   onChange={(changeEvent) => setDraftResults((current) => ({ ...current, [event.id]: changeEvent.target.value }))}
+                  disabled={!isLocked || savingEvent === event.id}
                 >
-                  <option value="">Nog geen uitslag</option>
+                  <option value="">{isLocked ? "Nog geen uitslag" : "Sluit eerst de stemming"}</option>
                   {teams.map((team) => <option key={team.id} value={team.id}>{team.name}</option>)}
                 </select>
                 <div className="admin-event__actions">
@@ -113,13 +191,13 @@ export function AdminPage() {
                     type="button"
                     className="button--small"
                     onClick={() => void storeResult(event, draftResults[event.id] || null)}
-                    disabled={!draftResults[event.id] || savingEvent === event.id || draftResults[event.id] === event.winningTeamId}
+                    disabled={!isLocked || !draftResults[event.id] || savingEvent === event.id || draftResults[event.id] === event.winningTeamId}
                   >
                     <Save size={16} />{savingEvent === event.id ? "Opslaan…" : hasResult ? "Correctie opslaan" : "Uitslag opslaan"}
                   </PrimaryButton>
                   {hasResult && <button type="button" className="admin-clear" onClick={() => void storeResult(event, null)} disabled={savingEvent === event.id}><RotateCcw size={15} />Uitslag intrekken</button>}
                 </div>
-                {savedEvent === event.id && <InlineSuccess>Uitslag opgeslagen; de stand is herberekend.</InlineSuccess>}
+                {savedEvent === event.id && <InlineSuccess>{successMessage}</InlineSuccess>}
               </CasinoCard>
             );
           })}

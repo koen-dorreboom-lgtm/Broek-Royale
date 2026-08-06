@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Crown, FlaskConical } from "lucide-react";
+import { Crown } from "lucide-react";
 import { EventPredictionCard } from "@/components/EventPredictionCard";
 import { ProtectedPage } from "@/components/ProtectedPage";
 import { ProgressBar } from "@/components/ui";
 import { getEvents, getPredictions, getTeams, savePrediction } from "@/lib/api";
-import { isEventLocked, toDateTimeLocalValue } from "@/lib/dates";
+import { isEventLocked } from "@/lib/dates";
 import { useAuth } from "@/providers/AuthProvider";
 import type { Event, Prediction, Team } from "@/types";
 
@@ -16,7 +16,6 @@ function PredictionsContent() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
-  const [currentDate, setCurrentDate] = useState(() => new Date());
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [savingEvent, setSavingEvent] = useState("");
@@ -40,11 +39,6 @@ function PredictionsContent() {
     return () => { isMounted = false; };
   }, [user, configurationError]);
 
-  useEffect(() => {
-    const timer = window.setInterval(() => setCurrentDate(new Date()), 30_000);
-    return () => window.clearInterval(timer);
-  }, []);
-
   const savedByEvent = useMemo(
     () => Object.fromEntries(predictions.map((prediction) => [prediction.eventId, prediction.predictedTeamId])),
     [predictions],
@@ -57,7 +51,7 @@ function PredictionsContent() {
     if (!user) return;
     const event = events.find((item) => item.id === eventId);
     const teamId = drafts[eventId];
-    if (!event || !teamId || isEventLocked(event.startAt, currentDate)) return;
+    if (!event || !teamId || isEventLocked(event.lockedAt)) return;
 
     setSavingEvent(eventId);
     setSaveErrors((current) => ({ ...current, [eventId]: "" }));
@@ -81,7 +75,7 @@ function PredictionsContent() {
       <header className="page-heading page-heading--left predictions-heading">
         <p className="eyebrow">De officiële speelkaart</p>
         <h1>Wedstrijdformulier</h1>
-        <p>Plaats je voorspellingen voor de Feestweekcompetitie. Je kunt iedere keuze aanpassen tot het onderdeel begint.</p>
+        <p>Plaats je voorspellingen voor de Feestweekcompetitie. Je kunt iedere keuze aanpassen totdat de beheerder de stemming sluit.</p>
       </header>
 
       {(configurationError || loadError) && <div className="notice notice--warning" role="alert">{configurationError || loadError}</div>}
@@ -91,23 +85,12 @@ function PredictionsContent() {
         <ProgressBar value={completedCount} max={events.length} />
       </section>
 
-      {process.env.NODE_ENV === "development" && (
-        <details className="dev-clock">
-          <summary><FlaskConical size={17} />Ontwikkelklok</summary>
-          <label htmlFor="test-date">Test alleen de zichtbare kaartstatus op een andere datum</label>
-          <input id="test-date" type="datetime-local" value={toDateTimeLocalValue(currentDate)} onChange={(event) => event.target.value && setCurrentDate(new Date(`${event.target.value}:00+02:00`))} />
-          <button type="button" onClick={() => setCurrentDate(new Date())}>Gebruik huidige tijd</button>
-          <p>De databaseklok blijft altijd bepalend voor het werkelijk opslaan.</p>
-        </details>
-      )}
-
       <div className="events-list">
         {regularEvents.map((event) => (
           <EventPredictionCard
             key={event.id}
             event={event}
             teams={teams}
-            currentDate={currentDate}
             selectedTeamId={drafts[event.id] ?? ""}
             savedTeamId={savedByEvent[event.id] ?? ""}
             isSaving={savingEvent === event.id}
@@ -125,11 +108,10 @@ function PredictionsContent() {
             <div><p>De grote finale</p><h2 id="overall-winner-title">Wie wint de hele Feestweek?</h2></div>
             <span aria-hidden="true">♠</span>
           </div>
-          <p className="overall-prediction__intro">Zet je belangrijkste voorspelling in: welk team wordt de algehele Feestweek 2026 winnaar? Deze voorspelling sluit bij de start van de feestweek.</p>
+          <p className="overall-prediction__intro">Zet je belangrijkste voorspelling in: welk team wordt de algehele Feestweek 2026 winnaar? De beheerder sluit deze stemming handmatig.</p>
           <EventPredictionCard
             event={overallWinnerEvent}
             teams={teams}
-            currentDate={currentDate}
             selectedTeamId={drafts[overallWinnerEvent.id] ?? ""}
             savedTeamId={savedByEvent[overallWinnerEvent.id] ?? ""}
             label={`${overallWinnerEvent.points} punten · Eindklassement`}

@@ -35,7 +35,7 @@ export function HomeContent() {
 
       <CasinoCard className="welcome-card">
         <p>Voorspel de winnaars van de onderdelen tijdens de Broeker Feestweek 2026. Verdien punten met goede voorspellingen en strijd om de eerste plaats op het leaderboard.</p>
-        <div className="closing-note"><Clock3 size={21} /><span>Iedere voorspelling sluit zodra het onderdeel begint.</span></div>
+        <div className="closing-note"><Clock3 size={21} /><span>De beheerder sluit iedere stemming handmatig.</span></div>
       </CasinoCard>
 
       {configurationError && <div className="notice notice--warning" role="status">{configurationError}</div>}

@@ -2,7 +2,6 @@ import type { EventStatus } from "@/types";
 
 const labels: Record<EventStatus, string> = {
   open: "Open",
-  closingSoon: "Sluit binnenkort",
   closed: "Gesloten",
   saved: "Opgeslagen",
 };

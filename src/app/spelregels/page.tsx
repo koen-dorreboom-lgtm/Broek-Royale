@@ -17,13 +17,13 @@ export default function RulesPage() {
           <li>Je maakt één persoonlijk account aan en kiest per onderdeel welk team volgens jou wint.</li>
           <li>Een onderdeel levert <strong>100 punten</strong> op bij een juiste voorspelling.</li>
           <li>De voorspelling voor de algehele Feestweekwinnaar levert <strong>250 punten</strong> op.</li>
-          <li>Je mag een voorspelling onbeperkt wijzigen totdat het betreffende sluitmoment is bereikt.</li>
-          <li>Vanaf het sluitmoment weigert de centrale database iedere nieuwe of gewijzigde voorspelling.</li>
+          <li>Je mag een voorspelling onbeperkt wijzigen totdat de organisatie de stemming voor het betreffende onderdeel sluit.</li>
+          <li>Zodra de beheerder de stemming sluit, weigert de centrale database iedere nieuwe of gewijzigde voorspelling.</li>
         </ol>
       </CasinoCard>
       <CasinoCard>
         <h2>Sluitmomenten en uitslagen</h2>
-        <p>Elk onderdeel sluit exact op de gepubliceerde starttijd in de tijdzone Europe/Amsterdam. De voorspelling voor de algehele winnaar sluit zaterdag 8 augustus 2026 om 17:30.</p>
+        <p>De gepubliceerde starttijd blijft een richttijd. De organisatie sluit iedere stemming handmatig, zodat rekening kan worden gehouden met wijzigingen of uitloop in het programma. Ook de voorspelling voor de algehele winnaar wordt handmatig gesloten.</p>
         <p>De organisatie voert na ieder onderdeel de officiële winnaar in. Een aantoonbare invoerfout kan worden gecorrigeerd; de stand wordt dan automatisch opnieuw berekend en de wijziging wordt gelogd.</p>
       </CasinoCard>
       <CasinoCard>
