@@ -121,7 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, "");
       const { error } = await createClient().auth.resetPasswordForEmail(email, {
-        redirectTo: `${siteUrl}/auth/callback?next=/wachtwoord-wijzigen`,
+        redirectTo: `${siteUrl}/auth/herstellen`,
         captchaToken,
       });
       return error ? getDutchAuthError(error.message) : null;

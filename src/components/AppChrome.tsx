@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { SiteFooter } from "@/components/SiteFooter";
 
-const QUIET_ROUTES = ["/inloggen", "/registreren", "/wachtwoord-vergeten", "/wachtwoord-wijzigen"];
+const QUIET_ROUTES = ["/inloggen", "/registreren", "/wachtwoord-vergeten", "/wachtwoord-wijzigen", "/auth/herstellen"];
 
 export function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
