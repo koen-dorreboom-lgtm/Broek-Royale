@@ -9,7 +9,7 @@ const QUIET_ROUTES = ["/inloggen", "/registreren", "/wachtwoord-vergeten", "/wac
 
 export function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isQuietRoute = QUIET_ROUTES.includes(pathname);
+  const isQuietRoute = QUIET_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 
   return (
     <div className={`app-frame ${isQuietRoute ? "app-frame--quiet" : ""}`}>
