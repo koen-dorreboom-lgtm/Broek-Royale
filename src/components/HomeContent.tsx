@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Clock3, LogIn, UserPlus, Vote } from "lucide-react";
+import { LogIn, UserPlus, Vote } from "lucide-react";
 import { ButtonLink, CasinoCard } from "@/components/ui";
 import { getEvents, getPredictions } from "@/lib/api";
 import { useAuth } from "@/providers/AuthProvider";
@@ -35,7 +35,6 @@ export function HomeContent() {
 
       <CasinoCard className="welcome-card">
         <p>Voorspel de winnaars van de onderdelen tijdens de Broeker Feestweek 2026. Verdien punten met goede voorspellingen en strijd om de eerste plaats op het leaderboard.</p>
-        <div className="closing-note"><Clock3 size={21} /><span>De beheerder sluit iedere stemming handmatig.</span></div>
       </CasinoCard>
 
       {configurationError && <div className="notice notice--warning" role="status">{configurationError}</div>}
