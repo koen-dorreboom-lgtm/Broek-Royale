@@ -7,12 +7,12 @@ values
   ('team-5', 'Broek Royale', 5, true),
   ('team-6', 'De Broeker Fanfare', 6, true),
   ('team-7', 'New Kids in de keuken', 7, true),
-  ('team-8', 'Los Amigos', 8, true),
-  ('team-9', 'Sons of Anarchy', 9, true),
-  ('team-10', 'De Tijgers', 10, true),
-  ('team-11', 'De Freddies', 11, true),
-  ('team-12', 'De judobaby’s', 12, true),
-  ('team-13', 'Narcos en Aqualandia', 13, true)
+  ('team-9', 'Sons of Anarchy', 8, true),
+  ('team-10', 'De Tijgers', 9, true),
+  ('team-11', 'De Freddies', 10, true),
+  ('team-12', 'De judobaby’s', 11, true),
+  ('team-13', 'Narcos en Aqualandia', 12, true),
+  ('team-8', 'Los Amigos', 13, false)
 on conflict (id) do update set
   name = excluded.name,
   sort_order = excluded.sort_order,
