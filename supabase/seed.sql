@@ -1,17 +1,18 @@
 insert into public.teams (id, name, sort_order, is_active)
 values
-  ('team-1', 'Team 1', 1, true),
-  ('team-2', 'Team 2', 2, true),
-  ('team-3', 'Team 3', 3, true),
-  ('team-4', 'Team 4', 4, true),
-  ('team-5', 'Team 5', 5, true),
-  ('team-6', 'Team 6', 6, true),
-  ('team-7', 'Team 7', 7, true),
-  ('team-8', 'Team 8', 8, true),
-  ('team-9', 'Team 9', 9, true),
-  ('team-10', 'Team 10', 10, true),
-  ('team-11', 'Team 11', 11, true),
-  ('team-12', 'Team 12', 12, true)
+  ('team-1', 'The B-Team', 1, true),
+  ('team-2', 'BDF Spreid De Vleugels', 2, true),
+  ('team-3', 'Pirates in Waterland', 3, true),
+  ('team-4', '20 jaar toppers', 4, true),
+  ('team-5', 'Broek Royale', 5, true),
+  ('team-6', 'De Broeker Fanfare', 6, true),
+  ('team-7', 'New Kids in de keuken', 7, true),
+  ('team-8', 'Los Amigos', 8, true),
+  ('team-9', 'Sons of Anarchy', 9, true),
+  ('team-10', 'De Tijgers', 10, true),
+  ('team-11', 'De Freddies', 11, true),
+  ('team-12', 'De judobaby’s', 12, true),
+  ('team-13', 'Narcos en Aqualandia', 13, true)
 on conflict (id) do update set
   name = excluded.name,
   sort_order = excluded.sort_order,
